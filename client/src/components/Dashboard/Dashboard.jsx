@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../services/api";
+import { getExpenses, addExpense, deleteExpense } from "../../services/api";
+
 
 const Dashboard = () => {
     const [expenses, setExpenses] = useState([]);
