@@ -1,84 +1,113 @@
-import React, { useEffect, useState } from "react";
-import { getExpenses, addExpense, deleteExpense } from "../../services/api";
+import React, { useState, useEffect } from "react";
+import axios from "../../services/api";
 
-function Dashboard() {
+const Dashboard = () => {
     const [expenses, setExpenses] = useState([]);
-    const [form, setForm] = useState({ title: "", amount: "", category: "" });
+    const [title, setTitle] = useState("");
+    const [amount, setAmount] = useState("");
 
-  // Fetch all expenses when the page loads
 useEffect(() => {
     fetchExpenses();
 }, []);
 
 const fetchExpenses = async () => {
-    const res = await getExpenses();
+    try {
+    const res = await axios.get("/expenses");
     setExpenses(res.data);
+    } catch (err) {
+    console.error(err);
+    }
 };
 
-const handleSubmit = async (e) => {
+const addExpense = async (e) => {
     e.preventDefault();
-    await addExpense(form);
-    setForm({ title: "", amount: "", category: "" });
+    try {
+    await axios.post("/expenses", { title, amount });
+    setTitle("");
+    setAmount("");
     fetchExpenses();
+    } catch (err) {
+    console.error(err);
+    }
 };
 
-const handleDelete = async (id) => {
-    await deleteExpense(id);
+const deleteExpense = async (id) => {
+    try {
+    await axios.delete(`/expenses/${id}`);
     fetchExpenses();
+    } catch (err) {
+    console.error(err);
+    }
 };
+
+  // ✅ Calculate Total Balance
+const total = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
 
 return (
     <div className="container mt-5">
-    <h2>Expense Tracker</h2>
+    <h2 className="text-center mb-4">Expense Tracker Dashboard</h2>
 
-    <form onSubmit={handleSubmit} className="mb-3">
-        <input
-        type="text"
-        placeholder="Title"
-        value={form.title}
-        onChange={(e) => setForm({ ...form, title: e.target.value })}
-        className="form-control mb-2"
-        required
-        />
-        <input
-        type="number"
-        placeholder="Amount"
-        value={form.amount}
-        onChange={(e) => setForm({ ...form, amount: e.target.value })}
-        className="form-control mb-2"
-        required
-        />
-        <input
-        type="text"
-        placeholder="Category"
-        value={form.category}
-        onChange={(e) => setForm({ ...form, category: e.target.value })}
-        className="form-control mb-2"
-        required
-        />
-        <button type="submit" className="btn btn-primary w-100">
-        Add Expense
-        </button>
+    <h4 className="text-success text-center mb-4">
+        💰 Total Balance: ₹{total}
+    </h4>
+
+    <form onSubmit={addExpense} className="mb-4">
+        <div className="row">
+        <div className="col-md-5">
+            <input
+            type="text"
+            placeholder="Expense title"
+            className="form-control"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            />
+        </div>
+        <div className="col-md-4">
+            <input
+            type="number"
+            placeholder="Amount"
+            className="form-control"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+            />
+        </div>
+        <div className="col-md-3">
+            <button type="submit" className="btn btn-primary w-100">
+            Add Expense
+            </button>
+        </div>
+        </div>
     </form>
 
-    <ul className="list-group">
+    <table className="table table-bordered text-center">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Amount (₹)</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
         {expenses.map((exp) => (
-        <li
-            key={exp._id}
-            className="list-group-item d-flex justify-content-between align-items-center"
-        >
-            {exp.title} — ₹{exp.amount} ({exp.category})
-            <button
-            className="btn btn-danger btn-sm"
-            onClick={() => handleDelete(exp._id)}
-            >
-            Delete
-            </button>
-        </li>
+            <tr key={exp._id}>
+            <td>{exp.title}</td>
+            <td>{exp.amount}</td>
+            <td>
+                <button
+                className="btn btn-danger btn-sm"
+                onClick={() => deleteExpense(exp._id)}
+                >
+                Delete
+                </button>
+            </td>
+            </tr>
         ))}
-    </ul>
+        </tbody>
+    </table>
     </div>
 );
-}
+};
 
 export default Dashboard;
