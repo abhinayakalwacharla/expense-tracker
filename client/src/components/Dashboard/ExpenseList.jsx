@@ -1,34 +1,23 @@
-import React, { useEffect, useState } from "react";
-import API from "../../services/api";
+import React from "react";
 
-const ExpenseList = () => {
-const [expenses, setExpenses] = useState([]);
-
-useEffect(() => {
-    fetchExpenses();
-}, []);
-
-const fetchExpenses = async () => {
-    try {
-    const res = await API.get("/expenses");
-    setExpenses(res.data);
-    } catch (error) {
-    console.error(error);
-    }
-};
-
+function ExpenseList() {
+    const dummyExpenses = [
+    { title: "Groceries", amount: 500 },
+    { title: "Internet Bill", amount: 800 },
+];
 return (
     <div>
-    <h4>All Expenses</h4>
+    <h4>Expenses</h4>
     <ul className="list-group">
-        {expenses.map((exp, index) => (
-        <li key={index} className="list-group-item">
-            {exp.title} - ₹{exp.amount}
+        {dummyExpenses.map((exp, index) => (
+        <li key={index} className="list-group-item d-flex justify-content-between">
+            <span>{exp.title}</span>
+            <span>₹{exp.amount}</span>
         </li>
         ))}
     </ul>
     </div>
 );
-};
+}
 
 export default ExpenseList;
