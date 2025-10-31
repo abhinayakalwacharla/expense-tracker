@@ -1,31 +1,34 @@
-import api from "../../services/api";
+import React, { useEffect, useState } from "react";
+import API from "../../services/api";
 
-export default function ExpenseList({ items=[], onDeleted }){
-    const del = async (id) => {
-    if(!confirm("Delete this expense?")) return;
+const ExpenseList = () => {
+const [expenses, setExpenses] = useState([]);
+
+useEffect(() => {
+    fetchExpenses();
+}, []);
+
+const fetchExpenses = async () => {
     try {
-        await api.delete(`/api/expenses/${id}`);
-        onDeleted?.();
-    } catch (err) {
-        alert("Delete failed");
+    const res = await API.get("/expenses");
+    setExpenses(res.data);
+    } catch (error) {
+    console.error(error);
     }
 };
 
 return (
     <div>
-        {items.length===0 && <p>No expenses yet</p>}
-        {items.map(item => (
-        <div key={item._id} style={{display:"flex",justifyContent:"space-between",padding:8,borderBottom:"1px solid #eee"}}>
-            <div>
-            <strong>{item.title}</strong>
-            <div>{item.category} • {new Date(item.date).toLocaleDateString()}</div>
-            </div>
-            <div style={{textAlign:"right"}}>
-            <div>₹ {item.amount}</div>
-            <button onClick={()=>del(item._id)}>Delete</button>
-            </div>
-        </div>
-))}
+    <h4>All Expenses</h4>
+    <ul className="list-group">
+        {expenses.map((exp, index) => (
+        <li key={index} className="list-group-item">
+            {exp.title} - ₹{exp.amount}
+        </li>
+        ))}
+    </ul>
     </div>
 );
-}
+};
+
+export default ExpenseList;
