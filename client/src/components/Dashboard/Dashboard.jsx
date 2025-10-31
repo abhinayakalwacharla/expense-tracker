@@ -1,29 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { getExpenses, addExpense, deleteExpense } from "../../services/api";
-
+import { getExpenses, addExpense as addExpenseApi, deleteExpense as deleteExpenseApi } from "../../services/api";
 
 const Dashboard = () => {
     const [expenses, setExpenses] = useState([]);
     const [title, setTitle] = useState("");
     const [amount, setAmount] = useState("");
 
-useEffect(() => {
+    useEffect(() => {
     fetchExpenses();
 }, []);
 
 const fetchExpenses = async () => {
     try {
-    const res = await axios.get("/expenses");
+    const res = await getExpenses();
     setExpenses(res.data);
     } catch (err) {
     console.error(err);
     }
 };
 
-const addExpense = async (e) => {
+const handleAddExpense = async (e) => {
     e.preventDefault();
     try {
-    await axios.post("/expenses", { title, amount });
+    await addExpenseApi({ title, amount });
     setTitle("");
     setAmount("");
     fetchExpenses();
@@ -32,9 +31,9 @@ const addExpense = async (e) => {
     }
 };
 
-const deleteExpense = async (id) => {
+const handleDeleteExpense = async (id) => {
     try {
-    await axios.delete(`/expenses/${id}`);
+    await deleteExpenseApi(id);
     fetchExpenses();
     } catch (err) {
     console.error(err);
@@ -52,7 +51,7 @@ return (
         💰 Total Balance: ₹{total}
     </h4>
 
-    <form onSubmit={addExpense} className="mb-4">
+    <form onSubmit={handleAddExpense} className="mb-4">
         <div className="row">
         <div className="col-md-5">
             <input
@@ -98,7 +97,7 @@ return (
             <td>
                 <button
                 className="btn btn-danger btn-sm"
-                onClick={() => deleteExpense(exp._id)}
+                onClick={() => handleDeleteExpense(exp._id)}
                 >
                 Delete
                 </button>
