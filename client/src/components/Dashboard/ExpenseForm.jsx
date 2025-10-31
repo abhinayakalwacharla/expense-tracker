@@ -1,42 +1,35 @@
 import React, { useState } from "react";
-import API from "../../services/api";
 
-const ExpenseForm = () => {
+function ExpenseForm() {
 const [expense, setExpense] = useState({ title: "", amount: "" });
-const handleChange = (e) => {
-    setExpense({ ...expense, [e.target.name]: e.target.value });
-};
 
-const handleSubmit = async (e) => {
+const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-    await API.post("/expenses", expense);
-    alert("Expense added successfully!");
-    } catch (error) {
-    console.error(error);
-    alert("Failed to add expense.");
-    }
+    alert(`Added: ${expense.title} - ₹${expense.amount}`);
+    setExpense({ title: "", amount: "" });
 };
 
 return (
     <form onSubmit={handleSubmit} className="mb-4">
     <input
         type="text"
-        name="title"
         placeholder="Expense Title"
-        onChange={handleChange}
+        value={expense.title}
+        onChange={(e) => setExpense({ ...expense, title: e.target.value })}
         className="form-control mb-2"
+        required
     />
     <input
         type="number"
-        name="amount"
         placeholder="Amount"
-        onChange={handleChange}
+        value={expense.amount}
+        onChange={(e) => setExpense({ ...expense, amount: e.target.value })}
         className="form-control mb-2"
+        required
     />
-    <button className="btn btn-primary">Add Expense</button>
+    <button type="submit" className="btn btn-primary w-100">Add Expense</button>
     </form>
 );
-};
+}
 
 export default ExpenseForm;
