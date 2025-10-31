@@ -1,29 +1,50 @@
-import { useState } from "react";
-import api from "../../services/api";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import API from "../../services/api";
 
-export default function Register(){
-    const [name,setName]=useState("");
-    const [email,setEmail]=useState("");
-    const [password,setPassword]=useState("");
-    const nav = useNavigate();
-    const submit = async e => {
+const Register = () => {
+    const [form, setForm] = useState({ name: "", email: "", password: "" });
+    const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+};
+const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const res = await api.post("/api/auth/register",{ name, email, password });
-        localStorage.setItem("token", res.data.token);
-        nav("/dashboard");
-    } catch(err) {
-        alert(err.response?.data?.message || "Register failed");
+        await API.post("/register", form);
+        alert("Registration successful! You can now login.");
+    } catch (error) {
+        console.error(error);
+        alert("Registration failed. Try again.");
     }
 };
 return (
-    <form onSubmit={submit} style={{maxWidth:400,margin:"40px auto",display:"flex",flexDirection:"column",gap:8}}>
+    <div className="container mt-5">
         <h2>Register</h2>
-        <input placeholder="Name" value={name} onChange={e=>setName(e.target.value)} required />
-        <input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} required />
-        <button type="submit">Register</button>
+        <form onSubmit={handleSubmit}>
+        <input
+        type="text"
+        name="name"
+        placeholder="Name"
+        onChange={handleChange}
+        className="form-control mb-2"
+        />
+        <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        onChange={handleChange}
+        className="form-control mb-2"
+        />
+        <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        onChange={handleChange}
+        className="form-control mb-2"
+        />
+        <button className="btn btn-primary">Register</button>
     </form>
+    </div>
 );
-}
+};
+
+export default Register;
