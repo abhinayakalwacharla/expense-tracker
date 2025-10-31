@@ -1,9 +1,7 @@
 import axios from "axios";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api", // backend URL
+const api = axios.create({
+  baseURL: "http://localhost:5000/api", // Make sure backend runs on port 5000
 });
 
-export const getExpenses = () => API.get("/expenses");
-export const addExpense = (expenseData) => API.post("/expenses", expenseData);
-export const deleteExpense = (id) => API.delete(`/expenses/${id}`);
+export default api;
